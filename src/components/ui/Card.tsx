@@ -1,0 +1,10 @@
+import type { ComponentProps } from "react";
+
+export function Card({ className = "", ...props }: ComponentProps<"div">) {
+  return (
+    <div
+      className={`rounded-xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-950 ${className}`}
+      {...props}
+    />
+  );
+}

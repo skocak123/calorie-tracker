@@ -10,4 +10,8 @@ export default defineConfig({
   dbCredentials: {
     url: process.env.DATABASE_URL ?? "",
   },
+  // Supabase roles already exist.
+  entities: {
+    roles: { provider: "supabase" },
+  },
 });
