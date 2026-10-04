@@ -1,8 +1,14 @@
 # Calorie Tracker
 
-Web-app om calorieën en macro's bij te houden. Zoek producten (NEVO + Open Food Facts), stel maaltijden samen en log per dag wat je eet ten opzichte van je eigen doelen.
+Web-app om calorieën en macro's bij te houden. Gebruikers bouwen samen een productendatabase op en loggen per dag wat ze eten.
 
 > 🚧 In ontwikkeling
+
+## Features
+
+- Registreren, e-mailbevestiging, inloggen en uitloggen (Supabase Auth)
+- Gedeelde productendatabase: iedereen kan producten toevoegen en zoeken, alleen de maker kan ze bewerken
+- Voedingswaarden per 100 g (kcal, eiwit, koolhydraten, vet, vezels)
 
 ## Stack
 
@@ -25,7 +31,7 @@ npm run dev
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Project Settings → API Keys (publishable)    |
 | `SUPABASE_SERVICE_ROLE_KEY`     | Project Settings → API Keys (secret)         |
 | `DATABASE_URL`                  | Connect → Session pooler                     |
-| `OFF_USER_AGENT`                | `CalorieTracker/0.1 (jouw@email.nl)`         |
+| `OFF_USER_AGENT`                | Nog niet in gebruik (Open Food Facts)        |
 
 ## Scripts
 
@@ -38,11 +44,12 @@ npm run dev
 | `npm run db:generate` | Migratie genereren uit `src/lib/db/schema.ts` |
 | `npm run db:migrate`  | Migraties uitvoeren                   |
 
-## NEVO-data
-
-De NEVO-tabel (RIVM) zit niet in de repo. Download het CSV-bestand zelf, zet het in `data/` en draai `npm run import:nevo`.
-
 ## Security
 
 - Gebruikersdata wordt altijd opgehaald als de ingelogde gebruiker, zodat Row Level Security geldt.
 - De service role key wordt alleen server-side gebruikt (`src/lib/supabase/admin.ts`, `server-only`) en in scripts.
+- Gebruikers mogen in `foods` alleen naam, merk en voedingswaarden schrijven (kolomrechten). Verwijderen kan niet.
+
+## Beheer
+
+Producten worden nooit echt verwijderd, zodat bestaande dagboeken blijven kloppen. Een beheerder archiveert een product door in Supabase (Table Editor → `foods`) `archived_at` in te vullen. Het verdwijnt dan uit de app.

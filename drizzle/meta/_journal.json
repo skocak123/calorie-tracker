@@ -8,6 +8,27 @@
       "when": 1791126918185,
       "tag": "0000_profiles",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1791134141135,
+      "tag": "0001_foods",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1791134826884,
+      "tag": "0002_archive_foods",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1791136004005,
+      "tag": "0003_restrict_food_columns",
+      "breakpoints": true
     }
   ]
 }
