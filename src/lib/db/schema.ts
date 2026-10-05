@@ -46,11 +46,13 @@ export const foods = pgTable(
     name: text("name").notNull(),
     brand: text("brand"),
     source: text("source").notNull().default("custom"),
-    kcal: numeric("kcal", { precision: 6, scale: 1 }).notNull(),
-    protein: numeric("protein", { precision: 5, scale: 1 }).notNull(),
-    carbs: numeric("carbs", { precision: 5, scale: 1 }).notNull(),
-    fat: numeric("fat", { precision: 5, scale: 1 }).notNull(),
-    fiber: numeric("fiber", { precision: 5, scale: 1 }),
+    // EAN barcode, used to update imported Open Food Facts products.
+    barcode: text("barcode").unique(),
+    kcal: numeric("kcal", { precision: 6, scale: 1, mode: "number" }).notNull(),
+    protein: numeric("protein", { precision: 5, scale: 1, mode: "number" }).notNull(),
+    carbs: numeric("carbs", { precision: 5, scale: 1, mode: "number" }).notNull(),
+    fat: numeric("fat", { precision: 5, scale: 1, mode: "number" }).notNull(),
+    fiber: numeric("fiber", { precision: 5, scale: 1, mode: "number" }),
     // Set null (not cascade) so foods stay available when the creator deletes their account.
     createdBy: uuid("created_by").references(() => authUsers.id, { onDelete: "set null" }),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
@@ -98,7 +100,7 @@ export const logEntries = pgTable(
     foodId: uuid("food_id")
       .notNull()
       .references(() => foods.id),
-    grams: numeric("grams", { precision: 6, scale: 1 }).notNull(),
+    grams: numeric("grams", { precision: 6, scale: 1, mode: "number" }).notNull(),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [

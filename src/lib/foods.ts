@@ -6,6 +6,7 @@ export type Food = {
   id: string;
   name: string;
   brand: string | null;
+  source: "custom" | "off" | "nevo";
   kcal: number;
   protein: number;
   carbs: number;
@@ -15,7 +16,7 @@ export type Food = {
   archived_at: string | null;
 };
 
-const FOOD_COLUMNS = "id, name, brand, kcal, protein, carbs, fat, fiber, created_by, archived_at";
+const FOOD_COLUMNS = "id, name, brand, source, kcal, protein, carbs, fat, fiber, created_by, archived_at";
 export const FOODS_PAGE_SIZE = 30;
 
 // Sorted by name; id as tiebreaker so pages never overlap.

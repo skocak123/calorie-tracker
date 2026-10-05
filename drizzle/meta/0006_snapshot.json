@@ -1,0 +1,403 @@
+{
+  "id": "838070d6-d542-483b-b1b4-1476dd12385f",
+  "prevId": "f077b97f-2b26-40be-924b-b8d3fcce9000",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.foods": {
+      "name": "foods",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "brand": {
+          "name": "brand",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "source": {
+          "name": "source",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'custom'"
+        },
+        "barcode": {
+          "name": "barcode",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "kcal": {
+          "name": "kcal",
+          "type": "numeric(6, 1)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "protein": {
+          "name": "protein",
+          "type": "numeric(5, 1)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "carbs": {
+          "name": "carbs",
+          "type": "numeric(5, 1)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "fat": {
+          "name": "fat",
+          "type": "numeric(5, 1)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "fiber": {
+          "name": "fiber",
+          "type": "numeric(5, 1)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_by": {
+          "name": "created_by",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "archived_at": {
+          "name": "archived_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "foods_created_by_users_id_fk": {
+          "name": "foods_created_by_users_id_fk",
+          "tableFrom": "foods",
+          "tableTo": "users",
+          "schemaTo": "auth",
+          "columnsFrom": [
+            "created_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "foods_barcode_unique": {
+          "name": "foods_barcode_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "barcode"
+          ]
+        }
+      },
+      "policies": {
+        "Ingelogde gebruikers kunnen alle producten lezen": {
+          "name": "Ingelogde gebruikers kunnen alle producten lezen",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "authenticated"
+          ],
+          "using": "true"
+        },
+        "Gebruikers kunnen producten aanmaken op eigen naam": {
+          "name": "Gebruikers kunnen producten aanmaken op eigen naam",
+          "as": "PERMISSIVE",
+          "for": "INSERT",
+          "to": [
+            "authenticated"
+          ],
+          "withCheck": "\"foods\".\"created_by\" = (select auth.uid()) and \"foods\".\"source\" = 'custom'"
+        },
+        "Gebruikers kunnen hun eigen producten wijzigen": {
+          "name": "Gebruikers kunnen hun eigen producten wijzigen",
+          "as": "PERMISSIVE",
+          "for": "UPDATE",
+          "to": [
+            "authenticated"
+          ],
+          "using": "\"foods\".\"created_by\" = (select auth.uid())",
+          "withCheck": "\"foods\".\"created_by\" = (select auth.uid()) and \"foods\".\"source\" = 'custom'"
+        }
+      },
+      "checkConstraints": {
+        "foods_source_check": {
+          "name": "foods_source_check",
+          "value": "\"foods\".\"source\" in ('custom', 'off', 'nevo')"
+        },
+        "foods_name_length": {
+          "name": "foods_name_length",
+          "value": "char_length(\"foods\".\"name\") between 1 and 100"
+        },
+        "foods_kcal_range": {
+          "name": "foods_kcal_range",
+          "value": "\"foods\".\"kcal\" between 0 and 1000"
+        },
+        "foods_macros_range": {
+          "name": "foods_macros_range",
+          "value": "\"foods\".\"protein\" between 0 and 100 and \"foods\".\"carbs\" between 0 and 100 and \"foods\".\"fat\" between 0 and 100 and (\"foods\".\"fiber\" is null or \"foods\".\"fiber\" between 0 and 100)"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.log_entries": {
+      "name": "log_entries",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "date": {
+          "name": "date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "meal_type": {
+          "name": "meal_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "food_id": {
+          "name": "food_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "grams": {
+          "name": "grams",
+          "type": "numeric(6, 1)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "log_entries_user_date_idx": {
+          "name": "log_entries_user_date_idx",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "date",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "log_entries_user_id_users_id_fk": {
+          "name": "log_entries_user_id_users_id_fk",
+          "tableFrom": "log_entries",
+          "tableTo": "users",
+          "schemaTo": "auth",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "log_entries_food_id_foods_id_fk": {
+          "name": "log_entries_food_id_foods_id_fk",
+          "tableFrom": "log_entries",
+          "tableTo": "foods",
+          "columnsFrom": [
+            "food_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {
+        "Gebruikers kunnen hun eigen dagboek lezen": {
+          "name": "Gebruikers kunnen hun eigen dagboek lezen",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "authenticated"
+          ],
+          "using": "\"log_entries\".\"user_id\" = (select auth.uid())"
+        },
+        "Gebruikers kunnen regels aan hun eigen dagboek toevoegen": {
+          "name": "Gebruikers kunnen regels aan hun eigen dagboek toevoegen",
+          "as": "PERMISSIVE",
+          "for": "INSERT",
+          "to": [
+            "authenticated"
+          ],
+          "withCheck": "\"log_entries\".\"user_id\" = (select auth.uid()) and exists (select 1 from \"foods\" where \"foods\".\"id\" = \"log_entries\".\"food_id\" and \"foods\".\"archived_at\" is null)"
+        },
+        "Gebruikers kunnen hun eigen dagboekregels wijzigen": {
+          "name": "Gebruikers kunnen hun eigen dagboekregels wijzigen",
+          "as": "PERMISSIVE",
+          "for": "UPDATE",
+          "to": [
+            "authenticated"
+          ],
+          "using": "\"log_entries\".\"user_id\" = (select auth.uid())",
+          "withCheck": "\"log_entries\".\"user_id\" = (select auth.uid())"
+        },
+        "Gebruikers kunnen hun eigen dagboekregels verwijderen": {
+          "name": "Gebruikers kunnen hun eigen dagboekregels verwijderen",
+          "as": "PERMISSIVE",
+          "for": "DELETE",
+          "to": [
+            "authenticated"
+          ],
+          "using": "\"log_entries\".\"user_id\" = (select auth.uid())"
+        }
+      },
+      "checkConstraints": {
+        "log_entries_meal_type_check": {
+          "name": "log_entries_meal_type_check",
+          "value": "\"log_entries\".\"meal_type\" in ('breakfast', 'lunch', 'dinner', 'snack')"
+        },
+        "log_entries_grams_range": {
+          "name": "log_entries_grams_range",
+          "value": "\"log_entries\".\"grams\" > 0 and \"log_entries\".\"grams\" <= 5000"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.profiles": {
+      "name": "profiles",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "display_name": {
+          "name": "display_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "profiles_id_users_id_fk": {
+          "name": "profiles_id_users_id_fk",
+          "tableFrom": "profiles",
+          "tableTo": "users",
+          "schemaTo": "auth",
+          "columnsFrom": [
+            "id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {
+        "Gebruikers kunnen hun eigen profiel lezen": {
+          "name": "Gebruikers kunnen hun eigen profiel lezen",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "authenticated"
+          ],
+          "using": "\"profiles\".\"id\" = (select auth.uid())"
+        },
+        "Gebruikers kunnen hun eigen profiel wijzigen": {
+          "name": "Gebruikers kunnen hun eigen profiel wijzigen",
+          "as": "PERMISSIVE",
+          "for": "UPDATE",
+          "to": [
+            "authenticated"
+          ],
+          "using": "\"profiles\".\"id\" = (select auth.uid())",
+          "withCheck": "\"profiles\".\"id\" = (select auth.uid())"
+        }
+      },
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

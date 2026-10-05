@@ -45,7 +45,17 @@ export default async function FoodsPage({ searchParams }: PageProps<"/foods">) {
         </Suspense>
       </Card>
 
-      <p className="text-xs text-zinc-500">Alle waarden zijn per 100 g.</p>
+      <p className="text-xs text-zinc-500">
+        Alle waarden zijn per 100 g. Bevat gegevens van{" "}
+        <a href="https://world.openfoodfacts.org" className="underline" target="_blank" rel="noreferrer">
+          Open Food Facts
+        </a>
+        , beschikbaar onder de{" "}
+        <a href="https://opendatacommons.org/licenses/odbl/1-0/" className="underline" target="_blank" rel="noreferrer">
+          Open Database License
+        </a>
+        .
+      </p>
     </div>
   );
 }

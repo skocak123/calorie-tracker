@@ -19,7 +19,11 @@ export function FoodListItem({ food, isOwner }: FoodListItemProps) {
     <li className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2 py-3">
       <div className="min-w-0">
         <p className="font-medium">{food.name}</p>
-        {food.brand && <p className="text-sm text-zinc-500">{food.brand}</p>}
+        <p className="text-sm text-zinc-500">
+          {food.brand}
+          {food.brand && food.source === "off" && " · "}
+          {food.source === "off" && <span className="text-xs">Open Food Facts</span>}
+        </p>
       </div>
 
       <div className="flex items-center gap-6 text-sm">
