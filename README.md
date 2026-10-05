@@ -7,6 +7,9 @@ Web-app om calorieën en macro's bij te houden. Gebruikers bouwen samen een prod
 ## Features
 
 - Registreren, e-mailbevestiging, inloggen en uitloggen (Supabase Auth)
+- Onboarding: geslacht, geboortedatum, lengte, gewicht, activiteit en doel (rustig/snel cutten, onderhouden, rustig/snel bulken)
+- Persoonlijk plan: BMI, rustverbranding (Mifflin-St Jeor), dagverbruik en dagdoelen voor kcal, eiwit, koolhydraten en vet
+- Dashboard met voortgangsbalken voor vandaag
 - Gedeelde productendatabase: iedereen kan producten toevoegen en zoeken, alleen de maker kan ze bewerken
 - 1000 populaire Nederlandse producten geïmporteerd uit Open Food Facts
 - Infinite scroll met skeleton-loaders

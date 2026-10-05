@@ -50,6 +50,13 @@
       "when": 1791221111312,
       "tag": "0006_food_barcode",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1791222903437,
+      "tag": "0007_profile_body_stats",
+      "breakpoints": true
     }
   ]
 }

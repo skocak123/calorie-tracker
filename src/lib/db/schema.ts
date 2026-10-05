@@ -20,9 +20,28 @@ export const profiles = pgTable(
       .primaryKey()
       .references(() => authUsers.id, { onDelete: "cascade" }),
     displayName: text("display_name").notNull(),
+    // Body stats for the nutrition plan; empty until onboarding is done.
+    sex: text("sex"),
+    birthDate: date("birth_date"),
+    heightCm: numeric("height_cm", { precision: 4, scale: 1, mode: "number" }),
+    weightKg: numeric("weight_kg", { precision: 4, scale: 1, mode: "number" }),
+    activityLevel: text("activity_level"),
+    goal: text("goal"),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [
+    check("profiles_sex_check", sql`${table.sex} in ('male', 'female')`),
+    check("profiles_birth_date_check", sql`${table.birthDate} >= '1900-01-01'`),
+    check("profiles_height_range", sql`${table.heightCm} between 100 and 250`),
+    check("profiles_weight_range", sql`${table.weightKg} between 30 and 300`),
+    check(
+      "profiles_activity_level_check",
+      sql`${table.activityLevel} in ('sedentary', 'light', 'moderate', 'active', 'very_active')`,
+    ),
+    check(
+      "profiles_goal_check",
+      sql`${table.goal} in ('cut_fast', 'cut_slow', 'maintain', 'bulk_slow', 'bulk_fast')`,
+    ),
     pgPolicy("Gebruikers kunnen hun eigen profiel lezen", {
       for: "select",
       to: authenticatedRole,

@@ -3,7 +3,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { updateSession } from "@/lib/supabase/proxy";
 
 // Logged-in users only.
-const PROTECTED_ROUTES = ["/dashboard", "/foods", "/log"];
+const PROTECTED_ROUTES = ["/dashboard", "/foods", "/log", "/settings", "/onboarding"];
 
 // Logged-out visitors only.
 const GUEST_ONLY_ROUTES = ["/", "/login", "/register"];

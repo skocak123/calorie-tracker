@@ -1,5 +1,8 @@
 import { z } from "zod";
 
+import { todayISO } from "@/lib/dates";
+import { ageOn } from "@/lib/nutrition/plan";
+
 const email = z.email("Vul een geldig e-mailadres in.");
 
 export const loginSchema = z.object({
@@ -88,4 +91,33 @@ export const logEntrySchema = z.object({
         .gt(0, "Vul meer dan 0 gram in.")
         .max(5000, "Maximaal 5000 gram."),
     ),
+});
+
+function measurement(label: string, min: number, max: number, unit: string) {
+  return z
+    .string()
+    .trim()
+    .min(1, `Vul je ${label.toLowerCase()} in.`)
+    .transform((value) => Number(value.replace(",", ".")))
+    .pipe(
+      z
+        .number({ error: `${label} moet een getal zijn.` })
+        .min(min, `${label} moet tussen ${min} en ${max} ${unit} liggen.`)
+        .max(max, `${label} moet tussen ${min} en ${max} ${unit} liggen.`),
+    );
+}
+
+export const profileSchema = z.object({
+  sex: z.enum(["male", "female"], "Kies je geslacht."),
+  birthDate: z.iso.date("Vul je geboortedatum in.").refine((date) => {
+    const age = ageOn(date, todayISO());
+    return age >= 16 && age <= 100;
+  }, "Je moet tussen 16 en 100 jaar oud zijn."),
+  heightCm: measurement("Lengte", 100, 250, "cm"),
+  weightKg: measurement("Gewicht", 30, 300, "kg"),
+  activityLevel: z.enum(
+    ["sedentary", "light", "moderate", "active", "very_active"],
+    "Kies hoe actief je bent.",
+  ),
+  goal: z.enum(["cut_fast", "cut_slow", "maintain", "bulk_slow", "bulk_fast"], "Kies je doel."),
 });

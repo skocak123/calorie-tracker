@@ -10,6 +10,7 @@ const links = [
   { href: "/dashboard", label: "Dashboard" },
   { href: "/log", label: "Dagboek" },
   { href: "/foods", label: "Producten" },
+  { href: "/settings", label: "Instellingen" },
 ];
 
 export function Navbar() {
