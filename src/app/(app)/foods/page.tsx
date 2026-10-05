@@ -1,18 +1,19 @@
 import Form from "next/form";
 import Link from "next/link";
+import { Suspense } from "react";
 
-import { FoodListItem } from "@/components/foods/FoodListItem";
+import { FoodListSkeleton } from "@/components/foods/FoodListSkeleton";
+import { InfiniteFoodList } from "@/components/foods/InfiniteFoodList";
 import { Button, buttonStyles } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
 import { requireUser } from "@/lib/auth";
-import { searchFoods } from "@/lib/foods";
+import { FOODS_PAGE_SIZE, searchFoods } from "@/lib/foods";
 
 export default async function FoodsPage({ searchParams }: PageProps<"/foods">) {
   const user = await requireUser();
   const { q } = await searchParams;
   const query = typeof q === "string" ? q.trim() : "";
-  const foods = await searchFoods(query);
 
   return (
     <div className="flex flex-col gap-6">
@@ -38,23 +39,47 @@ export default async function FoodsPage({ searchParams }: PageProps<"/foods">) {
       </Form>
 
       <Card className="py-2">
-        {foods.length === 0 ? (
-          <p className="py-6 text-center text-sm text-zinc-500">
-            {query ? `Geen producten gevonden voor "${query}".` : "Er zijn nog geen producten."}{" "}
-            <Link href="/foods/new" className="text-emerald-700 hover:underline dark:text-emerald-400">
-              Voeg er een toe.
-            </Link>
-          </p>
-        ) : (
-          <ul className="divide-y divide-zinc-200 dark:divide-zinc-800">
-            {foods.map((food) => (
-              <FoodListItem key={food.id} food={food} isOwner={food.created_by === user.id} />
-            ))}
-          </ul>
-        )}
+        {/* Header and search show right away; the list streams in behind skeleton rows. */}
+        <Suspense key={query} fallback={<SkeletonList />}>
+          <FoodResults query={query} currentUserId={user.id} />
+        </Suspense>
       </Card>
 
       <p className="text-xs text-zinc-500">Alle waarden zijn per 100 g.</p>
     </div>
+  );
+}
+
+async function FoodResults({ query, currentUserId }: { query: string; currentUserId: string }) {
+  const foods = await searchFoods(query);
+
+  if (foods.length === 0) {
+    return (
+      <p className="py-6 text-center text-sm text-zinc-500">
+        {query ? `Geen producten gevonden voor "${query}".` : "Er zijn nog geen producten."}{" "}
+        <Link href="/foods/new" className="text-emerald-700 hover:underline dark:text-emerald-400">
+          Voeg er een toe.
+        </Link>
+      </p>
+    );
+  }
+
+  return (
+    // key resets the list when the search changes.
+    <InfiniteFoodList
+      key={query}
+      initialFoods={foods}
+      query={query}
+      pageSize={FOODS_PAGE_SIZE}
+      currentUserId={currentUserId}
+    />
+  );
+}
+
+function SkeletonList() {
+  return (
+    <ul className="divide-y divide-zinc-200 dark:divide-zinc-800">
+      <FoodListSkeleton rows={8} />
+    </ul>
   );
 }

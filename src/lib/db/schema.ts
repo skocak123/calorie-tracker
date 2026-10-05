@@ -1,6 +1,8 @@
 import { sql } from "drizzle-orm";
 import {
   check,
+  date,
+  index,
   numeric,
   pgPolicy,
   pgTable,
@@ -78,6 +80,55 @@ export const foods = pgTable(
       to: authenticatedRole,
       using: sql`${table.createdBy} = ${authUid}`,
       withCheck: sql`${table.createdBy} = ${authUid} and ${table.source} = 'custom'`,
+    }),
+  ],
+);
+
+// One line in a user's food diary. Totals are never stored; they are
+// calculated from the food's values per 100 g and the grams eaten.
+export const logEntries = pgTable(
+  "log_entries",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => authUsers.id, { onDelete: "cascade" }),
+    date: date("date").notNull(),
+    mealType: text("meal_type").notNull(),
+    foodId: uuid("food_id")
+      .notNull()
+      .references(() => foods.id),
+    grams: numeric("grams", { precision: 6, scale: 1 }).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    index("log_entries_user_date_idx").on(table.userId, table.date),
+    check(
+      "log_entries_meal_type_check",
+      sql`${table.mealType} in ('breakfast', 'lunch', 'dinner', 'snack')`,
+    ),
+    check("log_entries_grams_range", sql`${table.grams} > 0 and ${table.grams} <= 5000`),
+    pgPolicy("Gebruikers kunnen hun eigen dagboek lezen", {
+      for: "select",
+      to: authenticatedRole,
+      using: sql`${table.userId} = ${authUid}`,
+    }),
+    pgPolicy("Gebruikers kunnen regels aan hun eigen dagboek toevoegen", {
+      for: "insert",
+      to: authenticatedRole,
+      // Archived foods can't be logged anymore.
+      withCheck: sql`${table.userId} = ${authUid} and exists (select 1 from ${foods} where ${foods.id} = ${table.foodId} and ${foods.archivedAt} is null)`,
+    }),
+    pgPolicy("Gebruikers kunnen hun eigen dagboekregels wijzigen", {
+      for: "update",
+      to: authenticatedRole,
+      using: sql`${table.userId} = ${authUid}`,
+      withCheck: sql`${table.userId} = ${authUid}`,
+    }),
+    pgPolicy("Gebruikers kunnen hun eigen dagboekregels verwijderen", {
+      for: "delete",
+      to: authenticatedRole,
+      using: sql`${table.userId} = ${authUid}`,
     }),
   ],
 );

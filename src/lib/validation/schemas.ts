@@ -72,3 +72,20 @@ export const foodSchema = z
   });
 
 export const uuidSchema = z.uuid();
+
+export const logEntrySchema = z.object({
+  date: z.iso.date("Ongeldige datum."),
+  mealType: z.enum(["breakfast", "lunch", "dinner", "snack"], "Kies een maaltijdmoment."),
+  foodId: z.uuid("Kies een product."),
+  grams: z
+    .string()
+    .trim()
+    .min(1, "Vul het aantal gram in.")
+    .transform((value) => Number(value.replace(",", ".")))
+    .pipe(
+      z
+        .number({ error: "Gram moet een getal zijn." })
+        .gt(0, "Vul meer dan 0 gram in.")
+        .max(5000, "Maximaal 5000 gram."),
+    ),
+});

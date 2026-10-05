@@ -29,6 +29,20 @@
       "when": 1791136004005,
       "tag": "0003_restrict_food_columns",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1791218459139,
+      "tag": "0004_log_entries",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1791218525318,
+      "tag": "0005_tighten_grants",
+      "breakpoints": true
     }
   ]
 }

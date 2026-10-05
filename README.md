@@ -9,6 +9,8 @@ Web-app om calorieën en macro's bij te houden. Gebruikers bouwen samen een prod
 - Registreren, e-mailbevestiging, inloggen en uitloggen (Supabase Auth)
 - Gedeelde productendatabase: iedereen kan producten toevoegen en zoeken, alleen de maker kan ze bewerken
 - Voedingswaarden per 100 g (kcal, eiwit, koolhydraten, vet, vezels)
+- Dagboek per dag: product kiezen, grammen invullen en de macro's live zien; het maaltijdmoment wordt op basis van de tijd voorgesteld
+- Totalen worden nooit opgeslagen maar berekend: waarde per 100 g × gram ÷ 100
 
 ## Stack
 

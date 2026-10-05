@@ -16,9 +16,14 @@ export type Food = {
 };
 
 const FOOD_COLUMNS = "id, name, brand, kcal, protein, carbs, fat, fiber, created_by, archived_at";
-const SEARCH_LIMIT = 50;
+export const FOODS_PAGE_SIZE = 30;
 
-export async function searchFoods(query: string): Promise<Food[]> {
+// Sorted by name; id as tiebreaker so pages never overlap.
+export async function searchFoods(
+  query: string,
+  limit = FOODS_PAGE_SIZE,
+  offset = 0,
+): Promise<Food[]> {
   const supabase = await createClient();
 
   let request = supabase
@@ -26,7 +31,8 @@ export async function searchFoods(query: string): Promise<Food[]> {
     .select(FOOD_COLUMNS)
     .is("archived_at", null)
     .order("name")
-    .limit(SEARCH_LIMIT);
+    .order("id")
+    .range(offset, offset + limit - 1);
 
   if (query) {
     request = request.ilike("name", `%${escapeLike(query)}%`);
