@@ -6,15 +6,21 @@ Web-app om calorieën en macro's bij te houden. Gebruikers bouwen samen een prod
 
 ## Features
 
-- Registreren, e-mailbevestiging, inloggen en uitloggen (Supabase Auth)
+**Account en plan**
+- Registreren met e-mailbevestiging, inloggen en uitloggen (Supabase Auth)
 - Onboarding: geslacht, geboortedatum, lengte, gewicht, activiteit en doel (rustig/snel cutten, onderhouden, rustig/snel bulken)
 - Persoonlijk plan: BMI, rustverbranding (Mifflin-St Jeor), dagverbruik en dagdoelen voor kcal, eiwit, koolhydraten en vet
 - Dashboard met voortgangsbalken voor vandaag
+
+**Producten**
 - Gedeelde productendatabase: iedereen kan producten toevoegen en zoeken, alleen de maker kan ze bewerken
 - 1000 populaire Nederlandse producten geïmporteerd uit Open Food Facts
-- Infinite scroll met skeleton-loaders
 - Voedingswaarden per 100 g (kcal, eiwit, koolhydraten, vet, vezels)
-- Dagboek per dag: product kiezen, grammen invullen en de macro's live zien; het maaltijdmoment wordt op basis van de tijd voorgesteld
+- Infinite scroll met skeleton-loaders
+
+**Dagboek**
+- Product kiezen, grammen invullen en de macro's live zien
+- Maaltijdmoment wordt op basis van de tijd voorgesteld
 - Totalen worden nooit opgeslagen maar berekend: waarde per 100 g × gram ÷ 100
 
 ## Stack
@@ -36,7 +42,6 @@ npm run dev
 | ------------------------------- | -------------------------------------------- |
 | `NEXT_PUBLIC_SUPABASE_URL`      | Project Settings → Data API                  |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Project Settings → API Keys (publishable)    |
-| `SUPABASE_SERVICE_ROLE_KEY`     | Project Settings → API Keys (secret)         |
 | `DATABASE_URL`                  | Connect → Session pooler                     |
 | `OFF_USER_AGENT`                | `CalorieTracker/0.1 (jouw@email.nl)`         |
 
@@ -55,8 +60,9 @@ npm run dev
 ## Security
 
 - Gebruikersdata wordt altijd opgehaald als de ingelogde gebruiker, zodat Row Level Security geldt.
-- De service role key wordt alleen server-side gebruikt (`src/lib/supabase/admin.ts`, `server-only`) en in scripts.
-- Gebruikers mogen in `foods` alleen naam, merk en voedingswaarden schrijven (kolomrechten). Verwijderen kan niet.
+- De app gebruikt geen service role key; alleen scripts (import) maken een directe databaseverbinding.
+- Supabase geeft nieuwe tabellen standaard alle rechten; de migraties trekken die in en geven alleen de nodige tabel- en kolomrechten terug.
+- Gebruikers mogen in `foods` alleen naam, merk en voedingswaarden schrijven. Verwijderen kan niet.
 
 ## Open Food Facts
 
