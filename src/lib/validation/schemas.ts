@@ -121,3 +121,33 @@ export const profileSchema = z.object({
   ),
   goal: z.enum(["cut_fast", "cut_slow", "maintain", "bulk_slow", "bulk_fast"], "Kies je doel."),
 });
+
+export const mealSchema = z.object({
+  name: z
+    .string()
+    .trim()
+    .min(1, "Geef je maaltijd een naam.")
+    .max(100, "De naam mag maximaal 100 tekens lang zijn."),
+  items: z
+    .array(
+      z.object({
+        foodId: z.uuid("Ongeldig product."),
+        grams: z
+          .number({ error: "Vul bij elk product het aantal gram in." })
+          .gt(0, "Vul bij elk product meer dan 0 gram in.")
+          .max(5000, "Maximaal 5000 gram per product."),
+      }),
+    )
+    .min(1, "Voeg minstens één product toe.")
+    .max(30, "Maximaal 30 producten per maaltijd."),
+});
+
+export const logMealSchema = z.object({
+  date: logEntrySchema.shape.date,
+  mealType: logEntrySchema.shape.mealType,
+  mealId: z.uuid("Kies een maaltijd."),
+  portions: z.coerce
+    .number({ error: "Kies het aantal porties." })
+    .min(0.25, "Minimaal een kwart portie.")
+    .max(10, "Maximaal 10 porties."),
+});

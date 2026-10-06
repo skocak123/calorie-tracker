@@ -5,12 +5,9 @@ import { useEffect, useState } from "react";
 
 import { Input } from "@/components/ui/Input";
 import { formatNumber } from "@/lib/format";
-import type { Food } from "@/lib/foods";
+import type { FoodNutrition } from "@/lib/foods";
 
-export type FoodOption = Pick<
-  Food,
-  "id" | "name" | "brand" | "kcal" | "protein" | "carbs" | "fat" | "fiber"
->;
+export type FoodOption = FoodNutrition;
 
 const MIN_QUERY_LENGTH = 2;
 const DEBOUNCE_MS = 300;

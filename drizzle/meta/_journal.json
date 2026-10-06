@@ -57,6 +57,13 @@
       "when": 1791222903437,
       "tag": "0007_profile_body_stats",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1791228356196,
+      "tag": "0008_meals",
+      "breakpoints": true
     }
   ]
 }

@@ -1,6 +1,6 @@
 import "server-only";
 
-import type { Food } from "@/lib/foods";
+import type { FoodNutrition } from "@/lib/foods";
 import type { MealType } from "@/lib/meal-types";
 import { createClient } from "@/lib/supabase/server";
 
@@ -8,7 +8,9 @@ export type LogEntry = {
   id: string;
   meal_type: MealType;
   grams: number;
-  food: Pick<Food, "id" | "name" | "brand" | "kcal" | "protein" | "carbs" | "fat" | "fiber">;
+  meal_name: string | null;
+  group_id: string | null;
+  food: FoodNutrition;
 };
 
 export async function getLogEntries(userId: string, date: string): Promise<LogEntry[]> {
@@ -16,7 +18,7 @@ export async function getLogEntries(userId: string, date: string): Promise<LogEn
 
   const { data, error } = await supabase
     .from("log_entries")
-    .select("id, meal_type, grams, food:foods(id, name, brand, kcal, protein, carbs, fat, fiber)")
+    .select("id, meal_type, grams, meal_name, group_id, food:foods(id, name, brand, kcal, protein, carbs, fat, fiber)")
     .eq("user_id", userId)
     .eq("date", date)
     .order("created_at");

@@ -105,6 +105,53 @@ export const foods = pgTable(
   ],
 );
 
+// A user's own saved meal, e.g. "Mijn wrap". Private: only the owner can see it.
+export const meals = pgTable(
+  "meals",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => authUsers.id, { onDelete: "cascade" }),
+    name: text("name").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    check("meals_name_length", sql`char_length(${table.name}) between 1 and 100`),
+    pgPolicy("Gebruikers beheren hun eigen maaltijden", {
+      for: "all",
+      to: authenticatedRole,
+      using: sql`${table.userId} = ${authUid}`,
+      withCheck: sql`${table.userId} = ${authUid}`,
+    }),
+  ],
+);
+
+// One ingredient of a meal, e.g. 60 g wrap.
+export const mealItems = pgTable(
+  "meal_items",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    mealId: uuid("meal_id")
+      .notNull()
+      .references(() => meals.id, { onDelete: "cascade" }),
+    foodId: uuid("food_id")
+      .notNull()
+      .references(() => foods.id),
+    grams: numeric("grams", { precision: 6, scale: 1, mode: "number" }).notNull(),
+  },
+  (table) => [
+    check("meal_items_grams_range", sql`${table.grams} > 0 and ${table.grams} <= 5000`),
+    // Access follows the meal: only the meal's owner can read or change its items.
+    pgPolicy("Gebruikers beheren de producten van hun eigen maaltijden", {
+      for: "all",
+      to: authenticatedRole,
+      using: sql`exists (select 1 from ${meals} where ${meals.id} = ${table.mealId} and ${meals.userId} = ${authUid})`,
+      withCheck: sql`exists (select 1 from ${meals} where ${meals.id} = ${table.mealId} and ${meals.userId} = ${authUid})`,
+    }),
+  ],
+);
+
 // One line in a user's food diary. Totals are never stored; they are
 // calculated from the food's values per 100 g and the grams eaten.
 export const logEntries = pgTable(
@@ -120,6 +167,9 @@ export const logEntries = pgTable(
       .notNull()
       .references(() => foods.id),
     grams: numeric("grams", { precision: 6, scale: 1, mode: "number" }).notNull(),
+    // Set when the line was logged as part of a meal; lines of one meal share a group id.
+    mealName: text("meal_name"),
+    groupId: uuid("group_id"),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [

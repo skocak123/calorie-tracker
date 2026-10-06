@@ -41,3 +41,11 @@ export function sumMacros(list: Macros[]): Macros {
     EMPTY_MACROS,
   );
 }
+
+export type Portion = { food: NutritionPer100g; grams: number };
+
+// Total of several foods with their amounts, e.g. all ingredients of a meal.
+// factor scales every amount, e.g. 2 for two portions.
+export function totalMacros(portions: Portion[], factor = 1): Macros {
+  return sumMacros(portions.map((portion) => macrosForAmount(portion.food, portion.grams * factor)));
+}

@@ -16,6 +16,12 @@ export type Food = {
   archived_at: string | null;
 };
 
+// The fields needed to show a food and calculate its macros.
+export type FoodNutrition = Pick<
+  Food,
+  "id" | "name" | "brand" | "kcal" | "protein" | "carbs" | "fat" | "fiber"
+>;
+
 const FOOD_COLUMNS = "id, name, brand, source, kcal, protein, carbs, fat, fiber, created_by, archived_at";
 export const FOODS_PAGE_SIZE = 30;
 

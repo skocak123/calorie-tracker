@@ -9,7 +9,7 @@ import { requireUser } from "@/lib/auth";
 import { todayISO } from "@/lib/dates";
 import { formatNumber } from "@/lib/format";
 import { getLogEntries } from "@/lib/log";
-import { macrosForAmount, sumMacros } from "@/lib/nutrition/calculate";
+import { totalMacros } from "@/lib/nutrition/calculate";
 import { GOALS, nutritionPlan } from "@/lib/nutrition/plan";
 import { getProfile, toBodyStats } from "@/lib/profile";
 
@@ -24,7 +24,7 @@ export default async function DashboardPage() {
   const goal = GOALS.find((item) => item.value === stats.goal)!;
 
   const entries = await getLogEntries(user.id, today);
-  const eaten = sumMacros(entries.map((entry) => macrosForAmount(entry.food, entry.grams)));
+  const eaten = totalMacros(entries);
 
   return (
     <div className="flex flex-col gap-6">

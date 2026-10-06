@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { EMPTY_MACROS, macrosForAmount, sumMacros } from "./calculate";
+import { EMPTY_MACROS, macrosForAmount, sumMacros, totalMacros } from "./calculate";
 
 const chicken = { kcal: 107, protein: 23.5, carbs: 0, fat: 1.4, fiber: null };
 const oats = { kcal: 372, protein: 13.5, carbs: 58.7, fat: 7, fiber: 10.1 };
@@ -39,5 +39,25 @@ describe("sumMacros", () => {
     const total = sumMacros([macrosForAmount(chicken, 150), macrosForAmount(oats, 50)]);
     expect(total.kcal).toBeCloseTo(160.5 + 186);
     expect(total.protein).toBeCloseTo(35.25 + 6.75);
+  });
+});
+
+describe("totalMacros", () => {
+  const wrap = [
+    { food: chicken, grams: 100 },
+    { food: oats, grams: 50 },
+  ];
+
+  it("adds up all ingredients", () => {
+    expect(totalMacros(wrap).kcal).toBeCloseTo(107 + 186);
+  });
+
+  it("scales by the number of portions", () => {
+    expect(totalMacros(wrap, 2).kcal).toBeCloseTo(2 * (107 + 186));
+    expect(totalMacros(wrap, 0.5).protein).toBeCloseTo(0.5 * (23.5 + 6.75));
+  });
+
+  it("returns 0 for a meal without ingredients", () => {
+    expect(totalMacros([])).toEqual(EMPTY_MACROS);
   });
 });

@@ -18,8 +18,13 @@ Web-app om calorieën en macro's bij te houden. Gebruikers bouwen samen een prod
 - Voedingswaarden per 100 g (kcal, eiwit, koolhydraten, vet, vezels)
 - Infinite scroll met skeleton-loaders
 
+**Maaltijden**
+- Eigen maaltijden samenstellen uit meerdere producten met grammen, met live totaal
+- Privé: alleen de maker ziet zijn maaltijden
+
 **Dagboek**
 - Product kiezen, grammen invullen en de macro's live zien
+- Maaltijd loggen met een aantal porties; de producten worden gekopieerd, zodat oude dagen niet veranderen als je de maaltijd later aanpast
 - Maaltijdmoment wordt op basis van de tijd voorgesteld
 - Totalen worden nooit opgeslagen maar berekend: waarde per 100 g × gram ÷ 100
 
